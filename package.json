@@ -1,0 +1,25 @@
+{
+    "name": "lambda-calc-toolbox",
+    "displayName": "Lambda Calculus Toolbox",
+    "description": "Tools for writing with the lambda calculus",
+    "version": "0.1.0",
+    "engines": {
+        "vscode": "^1.67.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "publisher": "kfish",
+    "activationEvents": [
+        "onCommand:lambda-calc-toolbox.helloWorld"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "lambda-calc-toolbox.helloWorld",
+                "title": "Hello World"
+            }
+        ]
+    }
+}
