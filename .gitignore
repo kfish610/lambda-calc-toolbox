@@ -33,3 +33,5 @@ hs_err_pid*
 .vscode/*
 !.vscode/launch.json
 !.vscode/tasks.json
+
+out/
