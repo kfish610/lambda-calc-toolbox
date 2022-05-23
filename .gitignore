@@ -4,6 +4,7 @@
 ### Metals ###
 .metals/
 .bloop/
+.bsp/
 project/**/metals.sbt
 
 ### SBT ###
