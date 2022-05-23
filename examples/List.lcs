@@ -1,0 +1,17 @@
+# Pair
+
+PAIR = λx. λy. (λz. z x y)
+FIRST = λp. p (λx. λy. x)
+SECOND = λp. p (λx. λy. y)
+
+# Values
+
+CONS = PAIR
+NIL = FALSE
+
+# Operators
+
+HEAD = FIRST
+TAIL = SECOND
+
+TAIL (TAIL (CONS 1 (CONS 2 3)))

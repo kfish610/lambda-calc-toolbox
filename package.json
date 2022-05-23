@@ -3,23 +3,55 @@
     "displayName": "Lambda Calculus Toolbox",
     "description": "Tools for writing with the lambda calculus",
     "version": "0.1.0",
+    "license": "MIT",
+    "author": "Kevin Fisher <kfish610@gmail.com>",
+    "repository": "github:kfish610/lambda-calc-toolbox",
     "engines": {
         "vscode": "^1.67.0"
     },
     "categories": [
-        "Other"
+        "Programming Languages"
     ],
     "publisher": "kfish",
     "activationEvents": [
-        "onCommand:lambda-calc-toolbox.helloWorld"
+        "onLanguage:lambda"
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "languages": [
+            {
+                "id": "lambda",
+                "aliases": [
+                    "Lambda Calculus",
+                    "lambda"
+                ],
+                "extensions": [
+                    ".lcs"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "lambda",
+                "scopeName": "source.lambda",
+                "path": "./syntaxes/lambda.tmLanguage.json"
+            }
+        ],
         "commands": [
             {
-                "command": "lambda-calc-toolbox.helloWorld",
-                "title": "Hello World"
+                "command": "lambda.reduce",
+                "title": "Reduce"
             }
-        ]
+        ],
+        "menus": {
+            "editor/context": [
+                {
+                    "when": "resourceLangId == lambda && editorFocus",
+                    "command": "lambda.reduce",
+                    "group": "navigation"
+                }
+            ]
+        }
     }
 }

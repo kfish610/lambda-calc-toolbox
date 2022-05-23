@@ -1,0 +1,29 @@
+# Values
+
+0 = λf. λx. x
+1 = λf. λx. f x
+2 = λf. λx. f (f x)
+3 = λf. λx. f (f (f x))
+4 = λf. λx. f (f (f (f x)))
+5 = λf. λx. f (f (f (f (f x))))
+6 = λf. λx. f (f (f (f (f (f x)))))
+7 = λf. λx. f (f (f (f (f (f (f x))))))
+8 = λf. λx. f (f (f (f (f (f (f (f x)))))))
+9 = λf. λx. f (f (f (f (f (f (f (f (f x))))))))
+# ...
+
+# Operators
+
+PLUS = λm. λn. λf. λx. m f (n f x)
+
+MULT = λm. λn. λf. λx. m (n f) x
+
+EXP = λm. λn. n m
+
+# Examples
+
+PLUS 2 3
+
+MULT 2 4
+
+EXP 2 5

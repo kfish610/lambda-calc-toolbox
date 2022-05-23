@@ -1,0 +1,20 @@
+# Values
+
+TRUE = λx. λy. x
+FALSE = λx. λy. y
+
+# Operators
+
+NOT = λp. p FALSE TRUE
+
+AND = λp. λq. p q p
+
+OR = λp. λq. p p q
+
+# Examples
+
+NOT TRUE
+
+OR TRUE FALSE
+
+AND FALSE TRUE
