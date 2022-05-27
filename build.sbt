@@ -15,6 +15,8 @@ lazy val root = project
     Compile / fastOptJS / artifactPath := baseDirectory.value / "out" / "extension.js",
     Compile / fullOptJS / artifactPath := baseDirectory.value / "out" / "extension.js",
     Compile / npmDependencies ++= Seq(
-      "@types/vscode" -> "1.67.0"
+      "@types/vscode" -> "1.67.0",
+      "vscode-textmate" -> "7.0.1",
+      "vscode-oniguruma" -> "1.6.2"
     )
   )

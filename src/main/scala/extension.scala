@@ -8,11 +8,12 @@ import io.kfish.lambdaCalcToolbox.LambdaReductionProvider
 object extension {
   @JSExportTopLevel("activate")
   def activate(context: ExtensionContext): Unit = {
+    val provider = LambdaReductionProvider()
     context.subscriptions.push(
       vs.workspace
         .registerTextDocumentContentProvider(
           "reductions",
-          LambdaReductionProvider
+          provider
         )
         .asInstanceOf[Dispose]
     )
@@ -21,7 +22,7 @@ object extension {
       vs.commands
         .registerCommand(
           "lambda.reduce",
-          in => LambdaReductionProvider.reductions.reduce()
+          in => provider.update()
         )
         .asInstanceOf[Dispose]
     )

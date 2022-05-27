@@ -1,15 +1,21 @@
+%include './Numeral.lcs'
+
 # Values
 
-TRUE = λx. λy. x
-FALSE = λx. λy. y
+TRUE := \xy. x
+FALSE := \xy. y
 
 # Operators
 
-NOT = λp. p FALSE TRUE
+NOT := \p. p FALSE TRUE
 
-AND = λp. λq. p q p
+AND := \pq. p q p
 
-OR = λp. λq. p p q
+OR  := \pq. p p q
+
+# Predicate
+
+ISZERO := \n. n (\x. FALSE) TRUE
 
 # Examples
 

@@ -35,3 +35,5 @@ hs_err_pid*
 !.vscode/tasks.json
 
 out/
+
+node_modules/

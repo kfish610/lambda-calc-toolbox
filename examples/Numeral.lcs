@@ -1,24 +1,24 @@
 # Values
 
-0 = λf. λx. x
-1 = λf. λx. f x
-2 = λf. λx. f (f x)
-3 = λf. λx. f (f (f x))
-4 = λf. λx. f (f (f (f x)))
-5 = λf. λx. f (f (f (f (f x))))
-6 = λf. λx. f (f (f (f (f (f x)))))
-7 = λf. λx. f (f (f (f (f (f (f x))))))
-8 = λf. λx. f (f (f (f (f (f (f (f x)))))))
-9 = λf. λx. f (f (f (f (f (f (f (f (f x))))))))
+0 := \fx. x
+1 := \fx. f x
+2 := \fx. f (f x)
+3 := \fx. f (f (f x))
+4 := \fx. f (f (f (f x)))
+5 := \fx. f (f (f (f (f x))))
+6 := \fx. f (f (f (f (f (f x)))))
+7 := \fx. f (f (f (f (f (f (f x))))))
+8 := \fx. f (f (f (f (f (f (f (f x)))))))
+9 := \fx. f (f (f (f (f (f (f (f (f x))))))))
 # ...
 
 # Operators
 
-PLUS = λm. λn. λf. λx. m f (n f x)
+PLUS := \mn. (\fx. m f (n f x))
 
-MULT = λm. λn. λf. λx. m (n f) x
+MULT := \mn. (\fx. m (n f) x)
 
-EXP = λm. λn. n m
+EXP  := \mn. n m
 
 # Examples
 

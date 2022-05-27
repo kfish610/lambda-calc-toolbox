@@ -41,17 +41,29 @@
         "commands": [
             {
                 "command": "lambda.reduce",
-                "title": "Reduce"
+                "title": "Lambda Calculus: Reduce"
             }
         ],
         "menus": {
             "editor/context": [
                 {
-                    "when": "resourceLangId == lambda && editorFocus",
+                    "when": "resourceLangId == lambda && editorTextFocus",
                     "command": "lambda.reduce",
                     "group": "navigation"
                 }
             ]
-        }
+        },
+        "keybindings": [
+            {
+                "command": "lambda.reduce",
+                "key": "ctrl+alt+R",
+                "mac": "cmd+alt+R",
+                "when": "resourceLangId == lambda && editorTextFocus"
+            }
+        ]
+    },
+    "dependencies": {
+        "vscode-oniguruma": "^1.6.2",
+        "vscode-textmate": "^7.0.1"
     }
 }

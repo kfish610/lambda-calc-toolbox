@@ -1,11 +1,11 @@
 # Value
 
-PAIR = λx. λy. (λz. z x y)
+PAIR := \xy. (\z. z x y)
 
 # Operators
 
-FIRST = λp. p (λx. λy. x)
-SECOND = λp. p (λx. λy. y)
+FIRST  := \p. p (\xy. x)
+SECOND := \p. p (\xy. y)
 
 PAIR 1 2
 
