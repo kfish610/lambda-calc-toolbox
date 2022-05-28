@@ -1,4 +1,5 @@
 %include './Numeral.lcs'
+%include './Boolean.lcs'
 
 # Pair
 
@@ -16,4 +17,4 @@ NIL  := FALSE
 HEAD := FIRST
 TAIL := SECOND
 
-TAIL (TAIL (CONS 1 (CONS 2 3)))
+TAIL (TAIL (CONS 1 (CONS 2 NIL)))

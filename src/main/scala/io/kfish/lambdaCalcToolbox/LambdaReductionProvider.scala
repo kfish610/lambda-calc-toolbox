@@ -35,11 +35,18 @@ class LambdaReductionProvider extends TextDocumentContentProvider {
     )
     fLine zip fDoc onComplete {
       case Success((pLine, pDoc)) => {
-        content = s"$pLine\n${pDoc.mkString("\n")}"
+        val reductions = LambdaReducer().reduce(pLine)(using pDoc)
+        content = reductions
+          .map {
+            case Success(expr) => expr.toString
+            case Failure(e) =>
+              e.getClass().getSimpleName() + ": " + e.getMessage()
+          }
+          .mkString("\n")
         show()
       }
       case Failure(e) => {
-        content = e.toString
+        content = e.getClass().getSimpleName() + ": " + e.getMessage()
         show()
       }
     }

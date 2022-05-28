@@ -1,14 +1,12 @@
 package io.kfish.lambdaCalcToolbox
 
 trait LambdaExpr {
-  override def toString: String = {
-    this match {
-      case LambdaExpr.Var(name)  => name
-      case LambdaExpr.Func(name) => name
-      case LambdaExpr.Lambda(arg, body) =>
-        s"(λ${arg.name}. $body)"
-      case LambdaExpr.App(x, y) => s"($x $y)"
-    }
+  override def toString: String = this match {
+    case LambdaExpr.Var(name)  => name
+    case LambdaExpr.Func(name) => name
+    case LambdaExpr.Lambda(arg, body) =>
+      s"(λ${arg.name}. $body)"
+    case LambdaExpr.App(x, y) => s"($x $y)"
   }
 }
 
