@@ -1,0 +1,82 @@
+{
+	"name": "Reductions",
+	"patterns": [
+		{
+			"include": "#expression"
+		}
+	],
+	"repository": {
+		"expression": {
+			"patterns": [
+				{
+					"name": "variable.other",
+					"match": "\\b[a-z₀-₉]\\b"
+				},
+				{
+					"name": "meta.lambda",
+					"begin": "(λ|\\\\)([a-z₀-₉]+)\\.",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.other"
+						},
+						"2": {
+							"name": "variable.parameter"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#expression"
+						}
+					],
+					"end": "(?=\\))|$",
+					"contentName": "meta.lambda.body"
+				},
+				{
+					"name": "entity.name.function",
+					"match": "\\b[A-Z0-9_]+\\b"
+				},
+				{
+					"name": "meta.group",
+					"begin": "\\(",
+					"patterns": [
+						{
+							"include": "#expression"
+						}
+					],
+					"end": "\\)",
+					"contentName": "meta.group.contents"
+				}
+			]
+		},
+		"definition": {
+			"name": "meta.definition",
+			"begin": "^([A-Z0-9_]+) *:=",
+			"beginCaptures": {
+				"1": {
+					"name": "entity.name.function"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#expression"
+				}
+			],
+			"end": "$",
+			"contentName": "meta.definition.value"
+		},
+		"comment": {
+			"name": "comment.line.number-sign",
+			"match": "^#.*$"
+		},
+		"include": {
+			"name": "keyword.other.import",
+			"match": "^%include *('[^'\\n]+')$",
+			"captures": {
+				"1": {
+					"name": "string.quoted.single"
+				}
+			}
+		}
+	},
+	"scopeName": "source.reductions"
+}

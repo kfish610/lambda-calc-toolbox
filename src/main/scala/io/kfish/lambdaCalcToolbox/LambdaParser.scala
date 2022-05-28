@@ -96,7 +96,7 @@ object LambdaParser {
       case head :: Nil => {
         val tokType = head.scopes.last
         if (tokType == "variable.other") {
-          LambdaExpr.Var(head.content)
+          LambdaExpr.Var(head.content.head, 0)
         } else if (tokType == "entity.name.function") {
           LambdaExpr.Func(head.content)
         } else {
@@ -122,7 +122,7 @@ object LambdaParser {
           }
         } else if (tokType == "keyword.other") {
           val mappedVars =
-            rest.head.content.toList.map(c => LambdaExpr.Var(c.toString()))
+            rest.head.content.toList.map(c => LambdaExpr.Var(c, 0))
           lambdaSplit(mappedVars, parseRec(trim(rest.drop(2))))
         } else if (
           tokType == "variable.other" || tokType == "entity.name.function"

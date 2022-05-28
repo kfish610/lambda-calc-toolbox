@@ -29,11 +29,11 @@ class LambdaReductionProvider extends TextDocumentContentProvider {
     val fDoc = LambdaParser.parseEnvironment(
       editor.document
         .getText(
-          vs.Range(vs.Position(1, 1), editor.selection.active)
+          vs.Range(vs.Position(0, 0), editor.selection.active)
         )
         .split("\n")
     )
-    fLine zip fDoc onComplete {
+    (fLine zip fDoc) onComplete {
       case Success((pLine, pDoc)) => {
         val reductions = LambdaReducer().reduce(pLine)(using pDoc)
         content = reductions
@@ -67,7 +67,7 @@ class LambdaReductionProvider extends TextDocumentContentProvider {
             .setViewColumn(vs.ViewColumn.Beside)
         )
         .`then`(editor =>
-          vs.languages.setTextDocumentLanguage(editor.document, "lambda")
+          vs.languages.setTextDocumentLanguage(editor.document, "reductions")
         )
     } else {
       onDidChangeEmitter.fire(reductionViewer.get.document.uri)

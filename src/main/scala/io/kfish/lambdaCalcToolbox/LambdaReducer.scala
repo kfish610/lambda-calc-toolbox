@@ -6,31 +6,22 @@ class LambdaReducer {
   def reduce(
       expr: LambdaExpr
   )(using env: Map[String, LambdaExpr]): List[Try[LambdaExpr]] =
-    Success(expr) :: (
-      if free(expr).isEmpty then
-        reduceOnce(expr) match {
-          case Success(Some(next)) => reduce(next)
-          case Success(None)       => Nil
-          case Failure(e)          => Failure(e) :: Nil
-        }
-      else
-        Failure(
-          ReductionException(
-            "Top level expressions should not have free variables"
-          )
-        ) :: Nil
-    )
+    Success(expr) :: (reduceOnce(expr) match {
+      case Success(Some(next)) => reduce(next)
+      case Success(None)       => Nil
+      case Failure(e)          => Failure(e) :: Nil
+    })
 
   def reduceOnce(expr: LambdaExpr)(using
       env: Map[String, LambdaExpr]
   ): Try[Option[LambdaExpr]] = Try {
     (expr match {
-      case LambdaExpr.Var(_)       => None
+      case LambdaExpr.Var(_, _)    => None
       case LambdaExpr.Func(name)   => Some(expandFunc(name))
       case LambdaExpr.Lambda(_, _) => None
       case LambdaExpr.App(x, y) =>
         x match {
-          case LambdaExpr.Var(_) => None
+          case LambdaExpr.Var(_, _) => None
           case LambdaExpr.Func(name) =>
             Some(LambdaExpr.App(expandFunc(name), y))
           case LambdaExpr.Lambda(arg, body) => Some(substitute(body, arg, y))
@@ -45,30 +36,52 @@ class LambdaReducer {
       from: LambdaExpr.Var,
       to: LambdaExpr
   )(using env: Map[String, LambdaExpr]): LambdaExpr = expr match {
-    case v @ LambdaExpr.Var(name) => if name == from.name then to else v
+    case v @ LambdaExpr.Var(_, _) => if v == from then to else v
     case f @ LambdaExpr.Func(name) =>
-      if free(f).contains(from) then substitute(expandFunc(name), from, to)
-      else f
+      if (free(f).contains(from)) {
+        substitute(expandFunc(name), from, to)
+      } else {
+        f
+      }
     case l @ LambdaExpr.Lambda(arg, body) =>
-      if arg == from then l
-      else LambdaExpr.Lambda(arg, substitute(body, from, to))
+      if (arg == from) {
+        l
+      } else if (free(to).contains(arg) && free(body).contains(from)) {
+        val newLambda = rename(l, free(to))
+        newLambda.copy(body = substitute(newLambda.body, from, to))
+      } else {
+        LambdaExpr.Lambda(arg, substitute(body, from, to))
+      }
     case LambdaExpr.App(x, y) =>
       LambdaExpr.App(substitute(x, from, to), substitute(y, from, to))
   }
 
-  var freeCache: Map[LambdaExpr, Set[LambdaExpr.Var]] = Map.empty
+  private def rename(lambda: LambdaExpr.Lambda, taken: Set[LambdaExpr.Var])(
+      using env: Map[String, LambdaExpr]
+  ): LambdaExpr.Lambda = {
+    var curr = lambda.arg
+    while {
+      curr = curr.copy(ver = curr.ver + 1)
+      taken.contains(curr)
+    } do ()
+    LambdaExpr.Lambda(curr, substitute(lambda.body, lambda.arg, curr))
+  }
+
+  var freeCache: scala.collection.mutable.Map[LambdaExpr, Set[LambdaExpr.Var]] =
+    scala.collection.mutable.Map.empty
 
   private def free(
       expr: LambdaExpr
-  )(using Map[String, LambdaExpr]): Set[LambdaExpr.Var] = freeCache.getOrElse(
-    expr,
-    expr match {
-      case v @ LambdaExpr.Var(_)        => Set(v)
-      case LambdaExpr.Func(name)        => free(expandFunc(name))
-      case LambdaExpr.Lambda(arg, body) => free(body) - arg
-      case LambdaExpr.App(x, y)         => free(x) | free(y)
-    }
-  )
+  )(using Map[String, LambdaExpr]): Set[LambdaExpr.Var] =
+    freeCache.getOrElseUpdate(
+      expr,
+      expr match {
+        case v @ LambdaExpr.Var(_, _)     => Set(v)
+        case LambdaExpr.Func(name)        => free(expandFunc(name))
+        case LambdaExpr.Lambda(arg, body) => free(body) - arg
+        case LambdaExpr.App(x, y)         => free(x) | free(y)
+      }
+    )
 
   private def expandFunc(name: String)(using env: Map[String, LambdaExpr]) =
     env.getOrElse(

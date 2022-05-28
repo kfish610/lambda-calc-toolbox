@@ -29,6 +29,13 @@
                     ".lcs"
                 ],
                 "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "reductions",
+                "aliases": [
+                    "Reductions"
+                ],
+                "configuration": "./language-configuration.json"
             }
         ],
         "grammars": [
@@ -36,6 +43,11 @@
                 "language": "lambda",
                 "scopeName": "source.lambda",
                 "path": "./syntaxes/lambda.tmLanguage.json"
+            },
+            {
+                "language": "reductions",
+                "scopeName": "source.reductions",
+                "path": "./syntaxes/reductions.tmLanguage.json"
             }
         ],
         "commands": [
