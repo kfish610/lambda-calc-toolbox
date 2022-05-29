@@ -147,7 +147,9 @@ object LambdaParser {
             parseRec(trim(content))
           } else {
             val argIndex =
-              content.length + end.lastIndexWhere(_.content.isBlank) + 1
+              content.length + end.lastIndexWhere(t =>
+                t.content.isBlank && t.depth == depth
+              ) + 1
             val (expr, arg) = tokens.splitAt(argIndex)
             LambdaExpr.App(parseRec(expr), parseRec(arg.tail))
           }

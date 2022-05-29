@@ -1,5 +1,6 @@
 %include './Numeral.lcs'
 %include './Boolean.lcs'
+%include './Pair.lcs'
 
 # Values
 
@@ -11,6 +12,15 @@ NIL  := \x. TRUE
 HEAD := FIRST
 TAIL := SECOND
 
+INDEX := \ln. HEAD (n TAIL l)
+
+# Tests
+
 TESTLIST := (CONS 1 (CONS 2 NIL))
 
-TAIL (TAIL TESTLIST)
+HEAD TESTLIST
+
+HEAD (TAIL TESTLIST)
+
+INDEX TESTLIST 0
+INDEX TESTLIST 1

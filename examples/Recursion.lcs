@@ -1,0 +1,15 @@
+%include './List.lcs'
+
+# Simple
+
+REPEAT := \sx. CONS x (s s x)
+
+HEAD (REPEAT REPEAT 1)
+INDEX (REPEAT REPEAT 2) 2
+
+# Combinator
+
+Y := \g. (\x. g (x x)) (\x. g (x x))
+ITERATE := \sfx. CONS x (s f (f x))
+
+INDEX ((Y ITERATE) SUCC 1) 9

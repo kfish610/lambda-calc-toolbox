@@ -12,6 +12,8 @@
 
 # Operators
 
+SUCC := \n. \fx. f (n f x)
+
 PLUS := \mn. (\fx. m f (n f x))
 
 MULT := \mn. (\fx. m (n f) x)
@@ -19,6 +21,8 @@ MULT := \mn. (\fx. m (n f) x)
 EXP  := \mn. n m
 
 # Examples
+
+SUCC 1
 
 PLUS 2 3
 
