@@ -2,46 +2,36 @@ package io.kfish.lambdaCalcToolbox
 
 import scala.util.{Try, Success, Failure}
 
-class LambdaReducer {
-  def reduce(
-      expr: LambdaExpr
-  )(using env: Map[String, LambdaExpr]): List[Try[LambdaExpr]] =
+class LambdaReducer(val env: Map[String, LambdaExpr]) {
+  def reduce(expr: LambdaExpr): List[Try[LambdaExpr]] =
     Success(expr) :: (reduceOnce(expr) match {
       case Success(Some(next)) => reduce(next)
       case Success(None)       => Nil
       case Failure(e)          => Failure(e) :: Nil
     })
 
-  def reduceOnce(expr: LambdaExpr)(using
-      env: Map[String, LambdaExpr]
-  ): Try[Option[LambdaExpr]] = Try {
+  def reduceOnce(expr: LambdaExpr): Try[Option[LambdaExpr]] =
     (expr match {
-      case LambdaExpr.Var(_, _) => None
-      case LambdaExpr.Func(name) =>
-        expandFunc(name) match {
-          case LambdaExpr.Var(_, _)      => None
-          case l @ LambdaExpr.Func(name) => Some(l)
-          case LambdaExpr.Lambda(_, _)   => None
-          case a @ LambdaExpr.App(x, y)  => Some(a)
-        }
-      case LambdaExpr.Lambda(_, _) => None
+      case LambdaExpr.Var(_, _)    => Success(None)
+      case LambdaExpr.Func(name)   => Try(Some(expandFunc(name)))
+      case LambdaExpr.Lambda(_, _) => Success(None)
       case LambdaExpr.App(x, y) =>
         x match {
-          case LambdaExpr.Var(_, _) => None
+          case LambdaExpr.Var(_, _) => Success(None)
           case LambdaExpr.Func(name) =>
-            Some(LambdaExpr.App(expandFunc(name), y))
-          case LambdaExpr.Lambda(arg, body) => Some(substitute(body, arg, y))
+            Try(Some(LambdaExpr.App(expandFunc(name), y)))
+          case LambdaExpr.Lambda(arg, body) =>
+            Try(Some(substitute(body, arg, y)))
           case a @ LambdaExpr.App(_, _) =>
-            reduceOnce(a).get.map(e => LambdaExpr.App(e, y))
+            reduceOnce(a).map(t => t.map(LambdaExpr.App(_, y)))
         }
     })
-  }
 
   private def substitute(
       expr: LambdaExpr,
       from: LambdaExpr.Var,
       to: LambdaExpr
-  )(using env: Map[String, LambdaExpr]): LambdaExpr = expr match {
+  ): LambdaExpr = expr match {
     case v @ LambdaExpr.Var(_, _) => if v == from then to else v
     case f @ LambdaExpr.Func(name) =>
       if (free(f).contains(from)) {
@@ -62,8 +52,9 @@ class LambdaReducer {
       LambdaExpr.App(substitute(x, from, to), substitute(y, from, to))
   }
 
-  private def rename(lambda: LambdaExpr.Lambda, taken: Set[LambdaExpr.Var])(
-      using env: Map[String, LambdaExpr]
+  private def rename(
+      lambda: LambdaExpr.Lambda,
+      taken: Set[LambdaExpr.Var]
   ): LambdaExpr.Lambda = {
     var curr = lambda.arg
     while {
@@ -76,9 +67,7 @@ class LambdaReducer {
   var freeCache: scala.collection.mutable.Map[LambdaExpr, Set[LambdaExpr.Var]] =
     scala.collection.mutable.Map.empty
 
-  private def free(
-      expr: LambdaExpr
-  )(using Map[String, LambdaExpr]): Set[LambdaExpr.Var] =
+  private def free(expr: LambdaExpr): Set[LambdaExpr.Var] =
     freeCache.getOrElseUpdate(
       expr,
       expr match {
@@ -89,7 +78,7 @@ class LambdaReducer {
       }
     )
 
-  private def expandFunc(name: String)(using env: Map[String, LambdaExpr]) =
+  private def expandFunc(name: String) =
     env.getOrElse(
       name,
       throw ReductionException(s"Could not find function named $name")
