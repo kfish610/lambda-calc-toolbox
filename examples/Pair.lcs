@@ -1,3 +1,5 @@
+%include './Numeral.lcs'
+
 # Value
 
 PAIR := \xy. (\z. z x y)

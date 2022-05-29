@@ -10,10 +10,15 @@ import scalajs.js.Dynamic.{global => g}
 import scalajs.js.DynamicImplicits.given
 import scalajs.js.JSConverters.JSRichFutureNonThenable
 
+import typings.vscode.{mod => vs}
+
 import typings.vscodeOniguruma.{mod => onig}
 
 import typings.vscodeTextmate.{mod => tm}
 import typings.vscodeTextmate.{typesMod => tmTypes}
+import typings.std.stdStrings.defs
+import scala.concurrent.Await
+import java.nio.charset.StandardCharsets
 
 object LambdaParser {
   private val fs = g.require("fs")
@@ -66,26 +71,52 @@ object LambdaParser {
   )
 
   def parse(line: String): Future[LambdaExpr] = withGrammar { grammar =>
-    val toks = grammar.tokenizeLine(line)
-    parseRec(trim(toks.tokens.toList)(using line))(using line)
+    Future.successful {
+      val toks = grammar.tokenizeLine(line)
+      parseRec(trim(toks.tokens.toList)(using line))(using line)
+    }
   }
 
   def parseEnvironment(lines: Seq[String]): Future[Map[String, LambdaExpr]] =
-    withGrammar { grammar =>
-      lines
-        .map(l => (l, grammar.tokenizeLine(l).tokens))
-        .collect {
-          case (line, toks)
-              if toks.length > 0 && toks.head.scopes.contains(
-                "meta.definition"
-              ) =>
-            (
-              toks.head.content(using line),
-              parseRec(trim(toks.toList.drop(2))(using line))(using line)
+    withGrammar(parseEnvInner(lines, _).map(_.toMap))
+
+  private def parseEnvInner(
+      lines: Seq[String],
+      grammar: tm.IGrammar
+  ): Future[Seq[(String, LambdaExpr)]] =
+    Future
+      .traverse(lines.map(l => (l, grammar.tokenizeLine(l).tokens))) {
+        case (line, toks)
+            if toks.length > 0 && toks.head.scopes.contains(
+              "meta.definition"
+            ) =>
+          Future.successful(
+            Seq(
+              (
+                toks.head.content(using line),
+                parseRec(trim(toks.toList.drop(2))(using line))(using line)
+              )
             )
+          )
+        case (line, toks)
+            if toks.length > 0 && toks.head.scopes.last == "keyword.other.import" => {
+          val filePath: vs.Uri = vs.Uri.joinPath(
+            vs.workspace.workspaceFolders.get(0).uri,
+            toks(1).content(using line).tail.init
+          )
+          vs.workspace.fs
+            .readFile(filePath)
+            .asInstanceOf[js.Thenable[js.typedarray.Uint8Array]]
+            .toFuture
+            .map(file =>
+              String(file.toArray.map(_.toByte), StandardCharsets.UTF_8)
+                .split("\n")
+            )
+            .flatMap(lines => parseEnvInner(lines, grammar))
         }
-        .toMap
-    }
+        case _ => Future.successful(Seq.empty: Seq[(String, LambdaExpr)])
+      }
+      .map(_.flatten)
 
   private def parseRec(tokens: List[tm.IToken])(using String): LambdaExpr =
     tokens match {
@@ -161,6 +192,6 @@ object LambdaParser {
     if tokens.length != 0 && tokens.last.content.isBlank then tokens.init
     else tokens
 
-  private def withGrammar[A](f: tm.IGrammar => A): Future[A] =
-    registry.loadGrammar("source.lambda").toFuture.map(f(_))
+  private def withGrammar[A](f: tm.IGrammar => Future[A]): Future[A] =
+    registry.loadGrammar("source.lambda").toFuture.flatMap(f)
 }

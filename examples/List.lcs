@@ -1,20 +1,16 @@
 %include './Numeral.lcs'
 %include './Boolean.lcs'
 
-# Pair
-
-PAIR   := \xy.  (\z. z x y)
-FIRST  := \p. p (\xy. x)
-SECOND := \p. p (\xy. y)
-
 # Values
 
 CONS := PAIR
-NIL  := FALSE
+NIL  := \x. TRUE
 
 # Operators
 
 HEAD := FIRST
 TAIL := SECOND
 
-TAIL (TAIL (CONS 1 (CONS 2 NIL)))
+TESTLIST := (CONS 1 (CONS 2 NIL))
+
+TAIL (TAIL TESTLIST)

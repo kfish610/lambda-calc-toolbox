@@ -17,7 +17,7 @@ class LambdaReducer {
   ): Try[Option[LambdaExpr]] = Try {
     (expr match {
       case LambdaExpr.Var(_, _)    => None
-      case LambdaExpr.Func(name)   => Some(expandFunc(name))
+      case LambdaExpr.Func(name)   => None
       case LambdaExpr.Lambda(_, _) => None
       case LambdaExpr.App(x, y) =>
         x match {

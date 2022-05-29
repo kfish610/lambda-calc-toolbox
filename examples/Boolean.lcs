@@ -1,3 +1,4 @@
+%include './Misc.lcs'
 %include './Numeral.lcs'
 
 # Values
@@ -15,7 +16,7 @@ OR  := \pq. p p q
 
 # Predicate
 
-ISZERO := \n. n (\x. FALSE) TRUE
+ISZERO := \n. n (CONST FALSE) TRUE
 
 # Examples
 
@@ -24,3 +25,7 @@ NOT TRUE
 OR TRUE FALSE
 
 AND FALSE TRUE
+
+ISZERO 2
+
+ISZERO 0
