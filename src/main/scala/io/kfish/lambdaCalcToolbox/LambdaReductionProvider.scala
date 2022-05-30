@@ -10,7 +10,8 @@ import typings.vscode.{mod => vs}
 import vs.{TextDocumentContentProvider}
 import java.util.concurrent.ExecutionException
 
-class LambdaReductionProvider extends TextDocumentContentProvider {
+class LambdaReductionProvider(manager: ReductionModeManager)
+    extends TextDocumentContentProvider {
   private var content: String = "heelo"
 
   private val onDidChangeEmitter = vs.EventEmitter[vs.Uri]()
@@ -22,7 +23,7 @@ class LambdaReductionProvider extends TextDocumentContentProvider {
   ): String = content
 
   def update(): Unit = {
-    val editor = vs.window.activeTextEditor.get;
+    val editor = vs.window.activeTextEditor.get
     val fLine = LambdaParser.parse(
       editor.document.lineAt(editor.selection.active).text
     )
@@ -35,7 +36,8 @@ class LambdaReductionProvider extends TextDocumentContentProvider {
     )
     (fLine zip fDoc) onComplete {
       case Success((pLine, pDoc)) => {
-        val reductions = LambdaReducer(pDoc).reduce(pLine)
+        val reductions = (if manager.isWeak then LambdaWHNFReducer(pDoc)
+                          else LambdaNFReducer(pDoc)).reduce(pLine)
         content = reductions
           .map {
             case Success(expr) => expr.toString

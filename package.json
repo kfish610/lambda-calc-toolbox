@@ -54,6 +54,10 @@
             {
                 "command": "lambda.reduce",
                 "title": "Lambda Calculus: Reduce"
+            },
+            {
+                "command": "lambda.swapReductionMethod",
+                "title": "Lambda Calculus: Swap Reduction Method"
             }
         ],
         "menus": {
