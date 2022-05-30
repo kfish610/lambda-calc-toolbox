@@ -9,7 +9,7 @@ lazy val root = project
   )
   .settings(
     name := "lambda-calc-toolbox",
-    version := "0.1.0",
+    version := "1.0.0",
     scalaVersion := scala3Version,
     scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
     Compile / fastOptJS / artifactPath := baseDirectory.value / "out" / "extension.js",
