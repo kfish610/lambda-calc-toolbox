@@ -1,13 +1,14 @@
-0 := \fx. x
-1 := \fx. f x
-2 := \fx. f (f x)
-3 := \fx. f (f (f x))
-4 := \fx. f (f (f (f x)))
-5 := \fx. f (f (f (f (f x))))
-6 := \fx. f (f (f (f (f (f x)))))
-7 := \fx. f (f (f (f (f (f (f x))))))
-8 := \fx. f (f (f (f (f (f (f (f x)))))))
-9 := \fx. f (f (f (f (f (f (f (f (f x))))))))
+0  := \fx. x
+1  := \fx. f x
+2  := \fx. f (f x)
+3  := \fx. f (f (f x))
+4  := \fx. f (f (f (f x)))
+5  := \fx. f (f (f (f (f x))))
+6  := \fx. f (f (f (f (f (f x)))))
+7  := \fx. f (f (f (f (f (f (f x))))))
+8  := \fx. f (f (f (f (f (f (f (f x)))))))
+9  := \fx. f (f (f (f (f (f (f (f (f x))))))))
+10 := \fx. f (f (f (f (f (f (f (f (f (f x)))))))))
 # ...
 
 # Operators
