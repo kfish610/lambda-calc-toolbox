@@ -28,11 +28,13 @@ class LambdaReductionProvider(manager: ReductionModeManager)
       editor.document.lineAt(editor.selection.active).text
     )
     val fDoc = LambdaParser.parseEnvironment(
+      editor.document.uri,
       editor.document
         .getText(
           vs.Range(vs.Position(0, 0), editor.selection.active)
         )
-        .split("\n")
+        .linesIterator
+        .toList
     )
     (fLine zip fDoc) onComplete {
       case Success((pLine, pDoc)) => {

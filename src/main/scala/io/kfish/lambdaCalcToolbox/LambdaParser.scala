@@ -77,10 +77,14 @@ object LambdaParser {
     }
   }
 
-  def parseEnvironment(lines: Seq[String]): Future[Map[String, LambdaExpr]] =
-    withGrammar(parseEnvInner(lines, _).map(_.toMap))
+  def parseEnvironment(
+      uri: vs.Uri,
+      lines: Seq[String]
+  ): Future[Map[String, LambdaExpr]] =
+    withGrammar(parseEnvInner(uri, lines, _).map(_.toMap))
 
   private def parseEnvInner(
+      uri: vs.Uri,
       lines: Seq[String],
       grammar: tm.IGrammar
   ): Future[Seq[(String, LambdaExpr)]] =
@@ -101,7 +105,8 @@ object LambdaParser {
         case (line, toks)
             if toks.length > 0 && toks.head.scopes.last == "keyword.other.import" => {
           val filePath: vs.Uri = vs.Uri.joinPath(
-            vs.workspace.workspaceFolders.get(0).uri,
+            uri,
+            "..",
             toks(1).content(using line).tail.init
           )
           vs.workspace.fs
@@ -109,10 +114,12 @@ object LambdaParser {
             .asInstanceOf[js.Thenable[js.typedarray.Uint8Array]]
             .toFuture
             .map(file =>
-              String(file.toArray.map(_.toByte), StandardCharsets.UTF_8)
-                .split("\n")
+              String(
+                file.toArray.map(_.toByte),
+                StandardCharsets.UTF_8
+              ).linesIterator.toList
             )
-            .flatMap(lines => parseEnvInner(lines, grammar))
+            .flatMap(lines => parseEnvInner(filePath, lines, grammar))
         }
         case _ => Future.successful(Seq.empty: Seq[(String, LambdaExpr)])
       }

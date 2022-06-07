@@ -2,7 +2,7 @@
     "name": "lambda-calc-toolbox",
     "displayName": "Lambda Calculus Toolbox",
     "description": "Tools for writing with the lambda calculus",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "MIT",
     "author": "Kevin Fisher <kfish610@gmail.com>",
     "repository": "github:kfish610/lambda-calc-toolbox",
