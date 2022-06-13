@@ -23,7 +23,13 @@ class LambdaNFReducer(val env: Map[String, LambdaExpr]) extends LambdaReducer {
         case LambdaExpr.Lambda(arg, body) =>
           Try(Some(substitute(body, arg, y)))
         case a: LambdaExpr.App =>
-          reduceOnce(a).map(t => t.map(LambdaExpr.App(_, y)))
+          reduceOnce(a)
+            .flatMap(t =>
+              Try(
+                t.map(LambdaExpr.App(_, y))
+                  .orElse(reduceOnce(y).map(_.map(LambdaExpr.App(a, _))).get)
+              )
+            )
       }
   }
 
